@@ -1,0 +1,25 @@
+
+Buildout has an awesome bootstrap.py that you can
+run only if you already have python and a buildout.cfg.
+
+This is available at:
+  curl -O http://downloads.buildout.org/2/bootstrap.py
+
+This script provides a bash script that when run will
+do several things:
+
+    1. prompt for a list of eggs to add to buildout.cfg
+    2. create a minimal buildout.cfg for the initial buildout
+    3. download buildout.py
+    4. run buildout.py (which will create bin/buildout)
+    5. run bin/buildout to install pip, virtualenv, and other tools as
+       specified by the eggs you input 6.
+    6. run bin/virtualenv, which will create bin/activate and some other
+       symlinks so that the local bin/ directory is self contained
+    7. source bin/activate to use the locally configured path
+    8. run bootstrap.py again from the local bin/ directory
+    9. run bin/buildout again with the local bin/ directory
+
+The result will be a self-contained virtualenv based buildout configured
+package directory for any of your python projects.
+
