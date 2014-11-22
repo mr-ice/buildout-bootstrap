@@ -13,7 +13,7 @@ do several things:
     3. download buildout.py
     4. run buildout.py (which will create bin/buildout)
     5. run bin/buildout to install pip, virtualenv, and other tools as
-       specified by the eggs you input 6.
+       specified by the eggs you input in (1).
     6. run bin/virtualenv, which will create bin/activate and some other
        symlinks so that the local bin/ directory is self contained
     7. source bin/activate to use the locally configured path
