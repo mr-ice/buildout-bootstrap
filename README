@@ -1,4 +1,3 @@
-
 Buildout has an awesome bootstrap.py that you can
 run only if you already have python and a buildout.cfg.
 
@@ -9,8 +8,8 @@ This script provides a bash script that when run will
 do several things:
 
     1. prompt for a list of eggs to add to buildout.cfg
-    2. create a minimal buildout.cfg for the initial buildout
-    3. download buildout.py
+    2. create a buildout.cfg if one does not already exist
+    3. download buildout.py from buildout.org
     4. run buildout.py (which will create bin/buildout)
     5. run bin/buildout to install pip, virtualenv, and other tools as
        specified by the eggs you input in (1).
