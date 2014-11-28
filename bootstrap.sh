@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # buidout-bootstrap - how to bootstrap python buildout with virtualenv
-# Copyright (C) 2014 Michael Rice <michael@riceclan.org>
+# Copyright (C) 2014 Michael Rice <michael at riceclan dot org>
 # 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
