@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 # buidout-bootstrap - how to bootstrap python buildout with virtualenv
 # Copyright (C) 2014 Michael Rice <michael@riceclan.org>
 # 
@@ -17,51 +16,53 @@
 # 
 
 echo -n "Looking for bin directory... "
-case "`basename $PWD`" in
-    bin)
-        echo "found (already here)"
-        cd ..
-        ;;
-    *)
-        echo -n "creating... " 
-        mkdir bin
-        echo "Done"
-        ;;
-esac
-pwd
-curl -O http://downloads.buildout.org/2/bootstrap.py
 
-eggs="pip virtualenv"
+if [ "${PWD%/bin}" != "${PWD}" ]; then
+    cd "${PWD%/bin}"
+fi
 
-echo "Automatic: setuptools, pip, virtualenv, buildout"
-echo "Enter additional eggs>> "
-read addeggs
+if [ ! -d "bin" ]; then
+    mkdir bin
+fi
 
-eggs="$eggs $addeggs"
+(cd bin && curl -q -z bootstrap.py -O http://downloads.buildout.org/2/bootstrap.py )
 
-cat > buildout.cfg <<EOT
+if [ ! -f buildout.cfg ]; then
+
+  eggs="pip virtualenv"
+  
+  echo "Automatic: setuptools, pip, virtualenv, buildout"
+  echo "Enter additional eggs>> "
+  read addeggs
+  
+  eggs="$eggs $addeggs"
+
+  cat > buildout.cfg <<EOT
 [buildout]
 parts = $eggs
 bin-directory = bin
 
 EOT
-
-for egg in ${=eggs}; do
-
-cat >> buildout.cfg <<EOT
+  
+  for egg in ${eggs}; do
+  
+  cat >> buildout.cfg <<EOT
 [$egg]
 recipe = zc.recipe.egg
 eggs = $egg
 
 EOT
-
-done
+  
+  done
+  
+fi
 
 # First pass, get virtualenv installed so that we can use the local python
-python bootstrap.py
+python bin/bootstrap.py
 bin/buildout
 bin/virtualenv .
 source bin/activate
+
 # Second pass, rebuild using the local python
-python bootstrap.py
+python bin/bootstrap.py
 bin/buildout
