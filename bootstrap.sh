@@ -15,6 +15,11 @@
 # limitations under the License.
 # 
 
+# In the future
+#   take a python from the commandline (not just path)
+#   prompt/arg to download and build
+#   need to handle various platforms 
+
 cat << EOF
 ************
 Bootstrapping buildout.  This will create buildout.cfg and bootstrap.py
