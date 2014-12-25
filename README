@@ -4,23 +4,69 @@ Copyright (C) 2014 Michael Rice <michael at riceclan dot org>
 Buildout has an awesome bootstrap.py that you can
 run only if you already have python and a buildout.cfg.
 
-This is available at:
+Buildout's bootstrap is available at the following (the former is the
+published current bootstrap.py, the latter is the current development
+head):
   curl -O http://downloads.buildout.org/2/bootstrap.py
+  or
+  curl -O https://raw.githubusercontent.com/buildout/buildout/master/bootstrap/bootstrap.py
 
-This script provides a bash script that when run will
-do several things:
+bootstrap.sh is a script that will generate an initial buildout.cfg and
+then download the buildout bootstrap.py and run it for you.
 
-    1. prompt for a list of eggs to add to buildout.cfg
-    2. create a buildout.cfg if one does not already exist
-    3. download buildout.py from buildout.org
-    4. run buildout.py (which will create bin/buildout)
-    5. run bin/buildout to install pip, virtualenv, and other tools as
-       specified by the eggs you input in (1).
-    6. run bin/virtualenv, which will create bin/activate and some other
-       symlinks so that the local bin/ directory is self contained
-    7. source bin/activate to use the locally configured path
-    8. run bootstrap.py again from the local bin/ directory
-    9. run bin/buildout again with the local bin/ directory
+Usage: bootstrap.sh [options]
+
+There are two ways to use bootstrap.sh.  Use this one if you already have
+python installed somewhere on your system and you don't want to build a new
+one:
+
+bootstrap.sh \
+    --use /path/to/bin/python \
+    --workdir /path/to/my/projects
+
+Use the following variant if you want to build python from source.  You will
+need a working c compiler (gcc recommended) and have a source tarball already
+downloaded:
+
+bootstrap.sh \
+    --build /path/to/Python.tgz \
+    --prefix /path/to/my/projects/.skel
+    --workdir /path/to/my/projects
+
+What bootstrap.sh will do for you:
+
+    * make your working directory (where your projects will go 
+      WORKON_PATH in the language of virtualenvwrapper)..
+
+    * if you are building python, it will create your $prefix directory
+      and a .build inside that, unpack Python, and configure/make/make install
+      so that $prefix/bin/python exists and works.
+
+    * download buildout's bootstrap.py (working wget or curl required)
+
+    * create a skeleton buildout.cfg
+
+    * runs bootstrap.py with the python from --use (or the one from --build)
+
+    * runs bin/buildout (created by bootstrap.py)
+
+    * runs bin/virtualenv (installed by bin/buildout)
+
+    * sources bin/activate (created by bin/virtualenv)
+
+    * runs bin/python bootstrap.py (bin/python created by bin/virtualenv)
+
+    * runs bin/bootstrap (re-created by bootstrap with bin/python)
+
+    * TODO - create virtualenvwrapper to shorten the steps for that tool
+      initialization to one step (set WORKON_HOME and source
+      virtualenvwrapper.sh).  virtualenvwrapper gives you tools like 'workon'
+      to list projects you're working on and 'workon project' to switch to the
+      project named 'project'
+
+    * TODO - create stub environment files for working with your python projects
+      outside of your prefix (just set your path, but that's easiest in a small
+      script that can be sourced and already knows the proper paths).
 
 The result will be a self-contained virtualenv based buildout configured
 package directory for any of your python projects.
