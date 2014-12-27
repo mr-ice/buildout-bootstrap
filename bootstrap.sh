@@ -1,9 +1,22 @@
 #!/bin/bash
 
+_me=`basename $0`
+
 # The buildout bootstrap url to use
 GITPIPURL="https://raw.github.com/pypa/pip/master/contrib/get-pip.py"
 BBSURL="http://downloads.buildout.org/2/bootstrap.py"
 BBSURL="https://raw.githubusercontent.com/buildout/buildout/master/bootstrap/bootstrap.py"
+
+die() { ##>
+    format=$1
+    case "$format" in
+        *"\n") :;;
+        *) format="$format\n";;
+    esac
+    shift
+    printf "$format" "$@" >&2
+    exit 1
+} ##<
 
 # Process Commandline Arguments ##>
 # bootstrap.py
@@ -39,6 +52,7 @@ while [ "$#" -ge 1  ]; do
         --wget-options=*) wgetoptions="${1#--wget-options=}"; shift;;
         --curl-options) curloptions="$2"; shift;;
         --curl-options=*) curloptions="${1#--curl-options=}"; shift;;
+        *) die "Unknown option \"$1\" to $_me, aborting!";;
     esac
     shift
 done ##<
@@ -62,17 +76,6 @@ inspect_tarball() { ##>
     esac
 
     _directory="`tar $_zopt -tf $_tarball | head -1`"
-} ##<
-
-die() { ##>
-    format=$1
-    case "$format" in
-        *"\n") :;;
-        *) format="$format\n";;
-    esac
-    shift
-    printf "$format" "$@" >&2
-    exit 1
 } ##<
 
 # cannot specify both a python already installed and to build our own
@@ -124,10 +127,9 @@ if [ -n "$useprefix" ]; then
     elif mkdir -p "$useprefix" >/dev/null; then
         useprefix_valid=true
     fi
-fi
-
-if ! "$useprefix_valid"; then
-    die "Cannot work in $useprefix."
+    if ! "$useprefix_valid"; then
+        die "Cannot work in $useprefix."
+    fi
 fi
 
 
@@ -229,12 +231,19 @@ if "$usepython_valid" && "$useworkdir_valid"; then
     download "$BBSURL"
     create_buildout_config
     $usepython bootstrap.py
-    bin/bootstrap
+    bin/buildout
     bin/virtualenv .
     source bin/activate
     bin/python bootstrap.py
-    bin/bootstrap
+    bin/buildout
 else
     die "Error, got to bootstrap without a valid python or workdir"
 fi
+
+# create a virtualenvwrapper bootstrap (is this recursion?)
+cat <<EOF > $useworkdir/virtualenvwrapper.startup.sh
+export WORKON_HOME="$useworkdir"
+source $useworkdir/bin/activate
+source $useworkdir/bin/virtualenvwrapper.sh
+EOF
 
